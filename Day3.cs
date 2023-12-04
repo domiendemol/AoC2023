@@ -11,7 +11,7 @@ public class Day3
     
     public void Run()
     {
-        List<string> lines = File.ReadAllText("day3.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
+        List<string> lines = File.ReadAllText("input/day3.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
 
         int sum = 0;
         for (int i=0; i<lines.Count; i++)
@@ -20,12 +20,9 @@ public class Day3
             MatchCollection matches = Regex.Matches(line, @"(?<id>[0-9]+)");
             foreach (Match match in matches)
             {
-                //Console.WriteLine($"{i} - {match.Length} - {match.Index} - {match.Value}");
-                // for each number, check all corners
                 _gearFound = false;
                 if (IsAdjacentToSymbol(lines, i, match.Index, match.Length))
                 {
-                    //Console.WriteLine($"ADJACENT : {match.Value}");
                     if (_gearFound)
                     {
                         if (_gears.ContainsKey(_lastGear)) _gears[_lastGear].Add(Int32.Parse(match.Value));
@@ -43,9 +40,7 @@ public class Day3
         foreach (KeyValuePair<Vector2Int,List<int>> keyValuePair in doubles)
         {
             int m = 1;
-            foreach (int i in keyValuePair.Value) {
-                m *= i;
-            }
+            foreach (int i in keyValuePair.Value) m *= i;
             p2Sum += m;
         }
         

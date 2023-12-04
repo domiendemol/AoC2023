@@ -6,7 +6,7 @@ public class Day1
 
     public void Run()
     {
-        List<string> lines = File.ReadAllText("day1.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
+        List<string> lines = File.ReadAllText("input/day1.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
         
         // part 1
         int sum = 0;
