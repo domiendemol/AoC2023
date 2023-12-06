@@ -4,6 +4,11 @@ namespace AoC2023;
 
 public class Day6
 {
+    /*
+     * Is actually a simple quadratic formula, can be solved much faster this way
+     * Alternatively, the bruteforce way can be optimized more (knowing that it's quadratic). The function is symmetric -
+     * the beginning/end part of the for loop can be cut if we find the button time associated with the current record
+     */
     public void Run()
     {
         List<string> lines = File.ReadAllText("input/day6.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
@@ -26,8 +31,8 @@ public class Day6
         long total = 0;
         for (long i = 1; i < time; i++) {
             if (GetDistance(time, i) > maxDist) total++;
+            else if (total > 0) break;
         }
-        Console.WriteLine(total);
         return total;
     }
     long GetDistance(long total, long button) => ((total - button) * button);
