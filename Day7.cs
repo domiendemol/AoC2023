@@ -21,7 +21,7 @@ public class Day7
     {
         List<Hand> hands = lines.Select(line => new Hand(line, joker)).ToList();
         hands.Sort();
-        hands.ForEach(hand => Console.WriteLine($"{hand.cards} - {hand.type} - {hand.bid}"));
+        // hands.ForEach(hand => Console.WriteLine($"{hand.cards} - {hand.type} - {hand.bid}"));
         return hands.Select((hand, index) => hand.bid * (index + 1)).Sum();
     }
 
