@@ -7,6 +7,12 @@ public class Day10
 	static char[] easts = {'-', 'J', '7'};
 	static char[] wests = {'-', 'L', 'F'};
 
+	// for pretty printing - not used
+	private Dictionary<string, string> symbolMap = new Dictionary<string, string>()
+	{
+		{"F", "\u250F"}, {"J", "\u251B"}, {"L", "\u2517"}, {"7", "\u2513"}, {"|", "\u2503"}, {"-", "\u2501" }
+	};
+	
 	private int[,] dists;
 	private int[,] path;
 	private int[,] insides;
@@ -24,81 +30,36 @@ public class Day10
 		(int, int) start = lines.Select((l, index) => (index, l.IndexOf('S'))).First(tuple => tuple.Item2 >= 0);
 		
 		// start at start point
-		// recursive next() function
 		// execute next() function with neighbours
 		// stop if we found S again - there is but one loop
 		Next(start.Item1, start.Item2,0, 'S', new []{'S'});
-		// PrintMap(path);
+		// PrintMap(path, false);
 		// PrintMap(dists);
 		
 		// Part 2
 		int part2 = 0;
 		for (int i = 0; i < lines.Count; i++)
 		{
+			lines[i] = lines[i].Replace('S','L');
 			part2 += lines[i].Where((c, index) => path[i,index] == 0 && IsInside(i, index)).Count();
 		}
 		Console.WriteLine($"PART 2: {part2}");
-		// PrintMap(insides);
+		// PrintMap(insides, false);
 	}	
 
 	bool IsInside(int x, int y)
 	{
-		// if (lines[x][y] == 'S') lines[x] = lines[x].Replace('S','7');
-		(int, int) hor = GetHorCrossings(x, y);
-		int left = hor.Item1;
-		int right = hor.Item2;
-		
-		(int, int) ver = GetVerCrossings(x, y);
-		int up = ver.Item1;
-		int down = ver.Item2;
-
-		if (left + right < 2) return false;
-		if (left == 0 || right == 0) return false;
-		if (up + down < 2) return false;
-		if (up == 0 || down == 0) return false;
-
-		if (left + right > 2 && (left + right) % 2 == 0 && left == right) return false; 
-		if (up + down > 2 && (up + down) % 2 == 0 && up == down) return false;
-
-		insides[x, y] = 1;
-		return true;
-	}
-
-	(int,int) GetHorCrossings(int x, int y)
-	{
+		// Ray-casting algorithm
+		// apparently you can test if inside loop by checking amount of |,L,J
+		// I'm not sure why only those 3 and not also 7 and F
 		List<char> left = new List<char>();
-		List<char> right = new List<char>();
 		for (int i = 0; i < lines[x].Length; i++)
 		{
-			if (i < y && path[x,i] == 1 && (norths.Contains(lines[x][i]) || souths.Contains(lines[x][i]))) left.Add(lines[x][i]);
-			if (i > y && path[x,i] == 1 && (norths.Contains(lines[x][i]) || souths.Contains(lines[x][i]))) right.Add(lines[x][i]);
+			if (i < y && path[x,i] == 1 && souths.Contains(lines[x][i])) left.Add(lines[x][i]);
 		}
-		int l = left.Count(c => c == '|') + GetDoubleCrossings(left);
-		int r = right.Count(c => c == '|') + GetDoubleCrossings(right);
-		return (l,r);
-	}
-	
-	(int,int) GetVerCrossings(int x, int y)
-	{
-		List<char> up = new List<char>();
-		List<char> down = new List<char>();
-		for (int i = 0; i < lines.Count; i++)
-		{
-			if (i < x && path[i,y] == 1 && (wests.Contains(lines[i][y]) || easts.Contains(lines[i][y]))) up.Add(lines[i][y]);
-			if (i > x && path[i,y] == 1 && (wests.Contains(lines[i][y]) || easts.Contains(lines[i][y]))) down.Add(lines[i][y]);
-		}
-		int u = up.Count(c => c == '-') + GetDoubleCrossings(up);
-		int d = down.Count(c => c == '-') + GetDoubleCrossings(down);
-		return (u, d);
-	}
+		insides[x, y] = left.Count % 2 != 0 ? 1 : 0;
 
-	int GetDoubleCrossings(List<char> crossings)
-	{
-		// L 7
-		// J F
-		int dc = (int) Math.Floor((crossings.Count(c => c == 'L') + crossings.Count(c => c == '7')) / 2f);
-		dc += (int) Math.Floor((crossings.Count(c => c == 'J') + crossings.Count(c => c == 'F')) / 2f);
-		return dc;
+		return left.Count % 2 != 0;
 	}
 
 	bool Next(int x, int y, int distance, char prevSymbol, char[] checkDirections)
@@ -168,14 +129,14 @@ public class Day10
 		return result;
 	}
 
-	void PrintMap(int[,] map)
+	void PrintMap(int[,] map, bool space)
 	{
 		for (int i = 0; i < lines.Count; i++)
 		{
 			Console.WriteLine("");
 			for (int j = 0; j < lines[0].Length; j++)
 			{
-				Console.Write((lines[i][j] == 'S' ? "S" : map[i,j]) + " ");
+				Console.Write((lines[i][j] == 'S' ? "S" : map[i,j]) + (space ? " " : ""));
 			}
 		}
 		Console.WriteLine("");
