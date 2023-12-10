@@ -18,7 +18,6 @@ public class Day9
 		{
 			grid[i].Add(grid[i][grid[i].Count - 1] + grid[i + 1][grid[i + 1].Count -1]);
 		}
-		
 		return grid[0][grid[0].Count-1];
 	}
 
@@ -30,7 +29,6 @@ public class Day9
 		{
 			grid[i].Insert(0, grid[i][0] - grid[i + 1][0]);
 		}
-		
 		return grid[0][0];
 	}
 

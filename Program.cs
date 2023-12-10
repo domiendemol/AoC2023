@@ -10,7 +10,7 @@ namespace AoC2023
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            new Day9().Run();
+            new Day10().Run();
             
             stopwatch.Stop();
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;
