@@ -8,10 +8,8 @@ public class Day3
     private bool _gearFound;
     private Vector2Int _lastGear;
     
-    public void Run()
+    public void Run(List<string> lines)
     {
-        List<string> lines = File.ReadAllText("input/day3.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
-
         int sum = 0;
         for (int i=0; i<lines.Count; i++)
         {

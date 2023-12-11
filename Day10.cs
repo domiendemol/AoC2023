@@ -20,9 +20,9 @@ public class Day10
 
 	private bool found = false;
 
-	public void Run()
+	public void Run(List<string> lines)
 	{
-		lines = File.ReadAllText("input/day10.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
+		this.lines = lines;
 		dists = new int[lines.Count, lines[0].Length];
 		path = new int[lines.Count, lines[0].Length];
 		insides = new int[lines.Count, lines[0].Length];

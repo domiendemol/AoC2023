@@ -7,9 +7,8 @@ public class Day8
 	private string _instructions;
 	Dictionary<string, Node> _map = new Dictionary<string, Node>();
 
-	public void Run()
+	public void Run(List<string> lines)
 	{
-		List<string> lines = File.ReadAllText("input/day8.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
 		_instructions = lines[0];
 		lines.Skip(1).
 			Select(l => Regex.Matches(l, @"([A-Z][A-Z][A-Z])")).ToList().

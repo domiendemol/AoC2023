@@ -4,10 +4,8 @@ namespace AoC2023;
 
 public class Day2
 {
-    public void Run()
+    public void Run(List<string> lines)
     {
-        List<string> lines = File.ReadAllText("input/day2.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
-
         int part1Sum = 0;
         int part2Sum = 0;
         foreach (string line in lines)

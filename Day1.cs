@@ -4,10 +4,8 @@ public class Day1
 {
     string[] words = {"one","two","three","four","five","six","seven","eight","nine"};
 
-    public void Run()
+    public void Run(List<string> lines)
     {
-        List<string> lines = File.ReadAllText("input/day1.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
-        
         // part 1
         int sum = 0;
         foreach (string line in lines) {

@@ -4,9 +4,8 @@ namespace AoC2023;
 
 public class Day5
 {
-    public void Run()
+    public void Run(List<string> lines)
     {
-        List<string> lines = File.ReadAllText("input/day5.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
         List<long> seeds = Regex.Matches(lines[0], @"(?<nr> [0-9]+)").Select(m => Int64.Parse(m.Value)).ToList();
         List<Map> maps = BuildMaps(lines);
         

@@ -6,10 +6,8 @@ public class Day4
 {
 	private long[] _cards;
 	
-	public void Run()
+	public void Run(List<string> lines)
 	{
-		List<string> lines = File.ReadAllText("input/day4.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
-
 		int answer1 = lines.Sum(l => GetCardTotal(l, true));
 		Console.WriteLine($"PART 1: {answer1}");
 

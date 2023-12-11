@@ -9,9 +9,8 @@ public class Day6
 	 * Alternatively, the bruteforce way can be optimized more (knowing that it's quadratic). The function is symmetric -
 	 * the beginning/end part of the for loop can be cut if we find the button time associated with the current record
 	 */
-	public void Run()
+	public void Run(List<string> lines)
 	{
-		List<string> lines = File.ReadAllText("input/day6.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
 		List<int> times = Regex.Matches(lines[0], @"(?<nr> [0-9]+)").Select(m => Int32.Parse(m.Value)).ToList();
 		List<int> distances = Regex.Matches(lines[1], @"(?<nr> [0-9]+)").Select(m => Int32.Parse(m.Value)).ToList();
 

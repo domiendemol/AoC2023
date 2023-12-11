@@ -8,10 +8,8 @@ public class Day7
 
     public enum Type { FIVE, FOUR, FULLHOUSE, THREE, DOUBLE, PAIR, HIGHCARD}
 
-    public void Run()
+    public void Run(List<string> lines)
     {
-        List<string> lines = File.ReadAllText("input/day7.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
-
         Console.WriteLine($"PART 1: {GetTotal(lines, false)}");
         _labels = new []{'A','K','Q','T','9','8','7','6','5','4','3','2','J'};
         Console.WriteLine($"PART 2: {GetTotal(lines, true)}");

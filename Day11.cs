@@ -6,10 +6,9 @@ public class Day11
 	private List<string> _lines;
 	private List<Galaxy> _galaxies = new List<Galaxy>();
 
-	public void Run()
+	public void Run(List<string> input)
 	{
-		_lines = File.ReadAllText("input/day11.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
-
+		_lines = input;
 		Part1();
 		Part2();
 	}

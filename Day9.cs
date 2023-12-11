@@ -2,10 +2,8 @@ namespace AoC2023;
 
 public class Day9
 {
-	public void Run()
+	public void Run(List<string> lines)
 	{
-		List<string> lines = File.ReadAllText("input/day9.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList();
-
 		Console.WriteLine($"PART 1: {lines.Sum(line => Extrapolate(line))}");
 		Console.WriteLine($"PART 2: {lines.Sum(line => ExtrapolateLeft(line))}");
 	}
