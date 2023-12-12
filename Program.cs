@@ -7,7 +7,7 @@ namespace AoC2023
 {
     static class Program
     {
-        const bool BENCHMARK = true;
+        const bool BENCHMARK = false;
         private const int day = 12;
         
         public static void Main(string[] args)
