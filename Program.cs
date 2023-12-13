@@ -8,7 +8,7 @@ namespace AoC2023
     static class Program
     {
         const bool BENCHMARK = false;
-        private const int day = 12;
+        private const int day = 13;
         
         public static void Main(string[] args)
         {
@@ -31,7 +31,7 @@ namespace AoC2023
             Type type = Type.GetType($"AoC2023.Day{day}");
             MethodInfo method = type.GetMethod("Run");
             var obj = Activator.CreateInstance(type);
-            method.Invoke(obj, new object[]{File.ReadAllText($"input/day{day}.txt").Trim().Split('\n').Where(s => s.Length > 0).ToList()});
+            method.Invoke(obj, new object[]{File.ReadAllText($"input/day{day}.txt").Trim().Split('\n').ToList()});
         }
         
         static void Benchmark()
