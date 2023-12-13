@@ -1,11 +1,8 @@
-using System.Runtime.InteropServices;
-using System.Text;
-
 namespace AoC2023;
 
 public class Day13
 {
-    List<(int, int)> _part1Results = new List<(int, int)>();
+    readonly List<(int, int)> _part1Results = new List<(int, int)>();
 
     public void Run(List<string> input)
     {
@@ -35,7 +32,7 @@ public class Day13
                 for (int k = 0; k < block[j].Length && !smudgeFound; k++)
                 {
                     // switch pos, calculate lines
-                    block[j] = ReplaceAtIndex(block[j], k, block[j][k] == '.' ? '#' : '.');
+                    block[j] = block[j].ReplaceAtIndex(k, block[j][k] == '.' ? '#' : '.');
                     int hor = GetHorizontalLineCount(block, _part1Results[i].Item1);
                     int ver = GetHorizontalLineCount(RotateBy90(block), _part1Results[i].Item2);
                     if (hor != 0 && hor != _part1Results[i].Item1)
@@ -43,7 +40,6 @@ public class Day13
                         total += (100 * hor);
                         smudgeFound = true;
                     }
-
                     if (ver != 0 && ver != _part1Results[i].Item2 && !smudgeFound)
                     {
                         total += ver;
@@ -51,7 +47,7 @@ public class Day13
                     }
 
                     // switch back
-                    block[j] = ReplaceAtIndex(block[j], k, block[j][k] == '.' ? '#' : '.');
+                    block[j] = block[j].ReplaceAtIndex(k, block[j][k] == '.' ? '#' : '.');
                 }
             }
 
@@ -140,13 +136,5 @@ public class Day13
         original.CopyTo(arr, 0);
         Array.Reverse(arr);
         return new Stack<T>(arr);
-    }
-    
-    // TODO move to a utils class
-    string ReplaceAtIndex(string text, int index, char c)
-    {
-        var stringBuilder = new StringBuilder(text);
-        stringBuilder[index] = c;
-        return stringBuilder.ToString();
     }
 }

@@ -63,7 +63,7 @@ public class Day12
 					return CountCombos(input, index+hashCount+1, groupIndex+1, counts);
 				if (input[index + hashCount] == '#') 
 					return 0;
-				input = ReplaceAtIndex(input, index + hashCount, '.');
+				input = input.ReplaceAtIndex(index + hashCount, '.');
 				// group found, cut it and move further
 				return CountCombos(input, index+hashCount+1, groupIndex+1, counts);
 			}
@@ -74,9 +74,9 @@ public class Day12
 		} 
 		else if (input[index] == '?')
 		{
-			string s1 = ReplaceAtIndex(input, index, '.');
+			string s1 = input.ReplaceAtIndex(index, '.');
 			result += CountCombos(s1, index+1, groupIndex, counts);
-			string s2 = ReplaceAtIndex(input, index, '#');
+			string s2 = input.ReplaceAtIndex(index, '#');
 			result += CountCombos(s2, index, groupIndex, counts);
 		}
 		else
@@ -88,27 +88,5 @@ public class Day12
 		return result;
 	}
 
-	private static string Implode(int groupIndex, List<int> counts)
-	{
-		return string.Join("-", counts.Skip(groupIndex));
-	}
-
-	public static long Factorial(int n)
-	{
-		if (n < 0) throw new ArgumentException("Input should be a non-negative integer.");
-
-		long result = 1;
-		for (int i = 2; i <= n; i++) {
-			result *= i;
-		}
-
-		return result;
-	}
-	
-	string ReplaceAtIndex(string text, int index, char c)
-	{
-		var stringBuilder = new StringBuilder(text);
-		stringBuilder[index] = c;
-		return stringBuilder.ToString();
-	}
+	private static string Implode(int groupIndex, List<int> counts) => string.Join("-", counts.Skip(groupIndex));
 }
