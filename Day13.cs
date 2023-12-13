@@ -1,28 +1,71 @@
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace AoC2023;
 
 public class Day13
 {
+    List<(int, int)> _part1Results = new List<(int, int)>();
+
     public void Run(List<string> input)
     {
         var blocks = SplitInput(input);
+      
         long part1 = 0;
         foreach (List<string> block in blocks)
         {
-            Console.WriteLine(block.Count + " " + GetHorizontalLineCount(block) + " " + GetHorizontalLineCount(RotateBy90(block)));
-            part1 += 100 * GetHorizontalLineCount(block);
-            part1 += GetHorizontalLineCount(RotateBy90(block));
-            
+            int hor = GetHorizontalLineCount(block, 0);
+            int ver = GetHorizontalLineCount(RotateBy90(block), 0);
+            _part1Results.Add((hor, ver));
+            part1 += (100 * hor) + ver;
         }
         Console.WriteLine($"PART 1: {part1}");
+        Console.WriteLine($"PART 2: {GetSmudgedTotal(blocks)}");
     }
 
-    int GetHorizontalLineCount(List<string> block)
+    private long GetSmudgedTotal(List<List<string>> blocks)
+    {
+        long total = 0;
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            List<string> block = blocks[i];
+            bool smudgeFound = false;
+            for (int j = 0; j < block.Count && !smudgeFound; j++)
+            {
+                for (int k = 0; k < block[j].Length && !smudgeFound; k++)
+                {
+                    // switch pos, calculate lines
+                    block[j] = ReplaceAtIndex(block[j], k, block[j][k] == '.' ? '#' : '.');
+                    int hor = GetHorizontalLineCount(block, _part1Results[i].Item1);
+                    int ver = GetHorizontalLineCount(RotateBy90(block), _part1Results[i].Item2);
+                    if (hor != 0 && hor != _part1Results[i].Item1)
+                    {
+                        total += (100 * hor);
+                        smudgeFound = true;
+                    }
+
+                    if (ver != 0 && ver != _part1Results[i].Item2 && !smudgeFound)
+                    {
+                        total += ver;
+                        smudgeFound = true;
+                    }
+
+                    // switch back
+                    block[j] = ReplaceAtIndex(block[j], k, block[j][k] == '.' ? '#' : '.');
+                }
+            }
+
+            if (!smudgeFound) total += (100 * _part1Results[i].Item1) + _part1Results[i].Item2;
+        }
+
+        return total;
+    }
+
+    int GetHorizontalLineCount(List<string> block, int previousVal)
     {
         Stack<string> stack = new Stack<string>();
         int duplicates = 0;
-
+        
         int i = 0;
         while (duplicates == 0 && i<block.Count)
         {
@@ -36,7 +79,9 @@ public class Day13
                     if (tStack.Pop().Equals(block[i + j])) mirrored++;
                 }
 
-                if (mirrored == i || mirrored+i == block.Count) duplicates = i; // from beginning or to end of block => (y)
+                if ((mirrored == i || mirrored+i == block.Count) && (previousVal != i)) {
+                    duplicates = i; // from beginning or to end of block => (y)
+                }
             }
             stack.Push(block[i++]);
         }
@@ -95,5 +140,13 @@ public class Day13
         original.CopyTo(arr, 0);
         Array.Reverse(arr);
         return new Stack<T>(arr);
+    }
+    
+    // TODO move to a utils class
+    string ReplaceAtIndex(string text, int index, char c)
+    {
+        var stringBuilder = new StringBuilder(text);
+        stringBuilder[index] = c;
+        return stringBuilder.ToString();
     }
 }
