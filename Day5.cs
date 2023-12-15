@@ -7,7 +7,7 @@ public class Day5
     public void Run(List<string> lines)
     {
         List<long> seeds = Regex.Matches(lines[0], @"(?<nr> [0-9]+)").Select(m => Int64.Parse(m.Value)).ToList();
-        List<Map> maps = BuildMaps(lines);
+        List<Map> maps = BuildMaps(lines.Where(line => line.Length > 0).ToList());
         
         // for every seed, go over all maps and find the end location
         long answer1 = seeds.Min(s => GetLocation(maps, s));

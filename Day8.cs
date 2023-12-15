@@ -10,7 +10,7 @@ public class Day8
 	public void Run(List<string> lines)
 	{
 		_instructions = lines[0];
-		lines.Skip(1).
+		lines.Where(line => line.Length > 0).Skip(1).
 			Select(l => Regex.Matches(l, @"([A-Z][A-Z][A-Z])")).ToList().
 			ForEach(m => _map[m[0].Value] = new Node(m[1].Value, m[2].Value));
 

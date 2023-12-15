@@ -8,7 +8,7 @@ namespace AoC2023
     static class Program
     {
         const bool BENCHMARK = false;
-        private const int day = 14;
+        private const int DAY = 15;
         
         public static void Main(string[] args)
         {
@@ -18,7 +18,7 @@ namespace AoC2023
             if (BENCHMARK) 
                 Benchmark();
             else 
-                RunDay(day);
+                RunDay(DAY);
             
             stopwatch.Stop();
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;
@@ -38,7 +38,7 @@ namespace AoC2023
         {
             Console.WriteLine("Running full benchmark: ");
             Console.WriteLine("========================");
-            for (int i = 1; i <= day; i++)
+            for (int i = 1; i <= DAY; i++)
             {
                 Console.WriteLine($"=> Day {i}:");
                 RunDay(i);
