@@ -36,4 +36,17 @@ public static class Utils
 
         return result;
     }
+    
+    	
+    // is there a better way?
+    public static char[,] ToCharArray(List<string> input)
+    {
+        char[,] tempShape = new char[input[0].Length,input.Count];
+        for(int j = 0; j < input.Count; j++) {
+            for(int i = 0; i < input[j].Length; i++) {
+                tempShape[i,j] = input[i][j];
+            }
+        }
+        return tempShape;
+    }
 }

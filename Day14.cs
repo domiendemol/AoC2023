@@ -8,14 +8,14 @@ public class Day14
 
 	public void Run(List<string> input)
 	{
-		char[,] map = ToCharArray(input);
+		char[,] map = Utils.ToCharArray(input);
 	
 		// PART 1
 		map = Move(map, Direction.NORTH);
 		Console.WriteLine($"PART 1: {GetLoad(map)}");
 			
 		// PART 2
-		map = ToCharArray(input);
+		map = Utils.ToCharArray(input);
 		for (int i = 0; i < 1000000000; i++)
 		{
 			map = Cycle(map);
@@ -29,7 +29,7 @@ public class Day14
 				// cycle/pattern found, now calculate the actual output after those moves
 				// could have stored the cycle outputs, then this step wasn't necessary but decided to do a hash
 				// because I assumed the cycle would be much larger than what it is. Not changing anymore :p
-				map = ToCharArray(input);
+				map = Utils.ToCharArray(input);
 				for (int j = 0; j < mapIndex; j++){
 					map = Cycle(map);
 				}
@@ -149,18 +149,5 @@ public class Day14
 			}
 			Console.WriteLine("");
 		}
-	}
-	
-	
-	// is there a better way?
-	char[,] ToCharArray(List<string> input)
-	{
-		char[,] tempShape = new char[input[0].Length,input.Count];
-		for(int j = 0; j < input.Count; j++) {
-			for(int i = 0; i < input[j].Length; i++) {
-				tempShape[i,j] = input[i][j];
-			}
-		}
-		return tempShape;
 	}
 }
