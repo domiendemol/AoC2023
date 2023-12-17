@@ -28,6 +28,17 @@ namespace AoC2023
                 return (x * 397) ^ y;
             }
         }
+
+        public Vector2Int Normalize()
+        {
+            return new Vector2Int(x == 0 ? 0 : x / x, y == 0 ? 0 : y / y);
+        }
+
+        public double Magnitude()
+        {
+            return Math.Sqrt(Math.Pow(x,2) + Math.Pow(y,2));
+        }
+        
         public static Vector2Int operator +(Vector2Int first, Vector2Int second) => new Vector2Int(first.x + second.x, first.y + second.y);
         public static Vector2Int operator *(int first, Vector2Int second) => new Vector2Int(first * second.x, first * second.y);
         public static Vector2Int operator -(Vector2Int first, Vector2Int second) => new Vector2Int(first.x - second.x, first.y - second.y);

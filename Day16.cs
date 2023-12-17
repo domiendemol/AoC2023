@@ -120,12 +120,10 @@ public class Day16
         }
     }
     
-    
     bool ValidateBoundaries((int, int, Direction) next, char[,] grid)
     {
         if (next.Item1 < 0 || next.Item2 < 0) return false;
         if (next.Item1 >= grid.GetLength(0) || next.Item2 >= grid.GetLength(1)) return false;
         return true;
     }
-    
 }
