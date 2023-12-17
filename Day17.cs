@@ -19,11 +19,19 @@ public class Day17
                 blocks[i, j] = Int32.Parse("" + input[i][j]);
             }
         }
+        int part1 = FindShortestPath(blocks, false);
+        Console.WriteLine($"PART 1: {part1}");
+        int part2 = FindShortestPath(blocks, true);
+        Console.WriteLine($"PART 2: {part2}");
+    }
+
+    private int FindShortestPath(int[,] blocks, bool ultra)
+    {
         Dictionary<(Vector2Int pos, Vector2Int dir), int> queue = new Dictionary<(Vector2Int pos, Vector2Int dir), int>();
         Dictionary<(Vector2Int pos, Vector2Int dir), int> minDist = new Dictionary<(Vector2Int pos, Vector2Int dir), int>();
 
         queue[(new Vector2Int(0, 0), new Vector2Int(0, 0))] = 0;
-       
+
         while (queue.Count > 0)
         {
             int min = queue.Min(x => x.Value);
@@ -31,13 +39,14 @@ public class Day17
             queue.Remove(cur.Key);
 
             minDist.TryAdd(cur.Key, min);
-            
+
             // check its neighbours
             Vector2Int lastDir = cur.Key.dir;
-            List<Vector2Int> directions = GetPossibleDirections(cur.Key.pos, lastDir);
+            List<Vector2Int> directions = GetPossibleDirections(cur.Key.pos, lastDir, ultra);
             foreach (Vector2Int nextDir in directions)
             {
-                (Vector2Int pos, Vector2Int dir) nextPos = (cur.Key.pos + nextDir, (nextDir.Normalize() == lastDir.Normalize()) ? nextDir+lastDir : nextDir);
+                (Vector2Int pos, Vector2Int dir) nextPos = (cur.Key.pos + nextDir,
+                    (nextDir.Normalize() == lastDir.Normalize()) ? nextDir + lastDir : nextDir);
                 if (!minDist.ContainsKey(nextPos)) // not visited yet
                 {
                     int nextHeatLoss = cur.Value + blocks[nextPos.Item1.x, nextPos.Item1.y];
@@ -47,16 +56,16 @@ public class Day17
                 else minDist[nextPos] = Math.Min(minDist[nextPos], cur.Value + blocks[nextPos.Item1.x, nextPos.Item1.y]);
             }
             // try to stop a bit earlier
-            // if (cur.Key.pos == new Vector2Int(_gridHeight - 1, _gridWidth - 1)) queue.Clear();
+            if (cur.Key.pos == new Vector2Int(_gridHeight - 1, _gridWidth - 1)) queue.Clear();
         }
-        
+
         // TODO currently off by one on the actual input (1127 instead of 1128) and no idea why
         int part1 = minDist.Where(kvp => kvp.Key.pos == new Vector2Int(_gridHeight - 1, _gridWidth - 1))
             .Min(kvp => kvp.Value);
-        Console.WriteLine($"PART 1: {part1}");
+        return part1;
     }
 
-    List<Vector2Int> GetPossibleDirections(Vector2Int blockPos, Vector2Int lastStep)
+    List<Vector2Int> GetPossibleDirections(Vector2Int blockPos, Vector2Int lastStep, bool ultra)
     {
         List<Vector2Int> result = new List<Vector2Int>();
         foreach (Vector2Int direction in _directions)
@@ -68,8 +77,9 @@ public class Day17
             if (blockPos.y + direction.y >= _gridWidth) continue;
             // should never go back
             if (lastStep.Normalize() == -1 * direction) continue;
-            // should never do more than 3 steps in same direction
-            if ((lastStep + direction).Magnitude() == 4f) continue;
+            if (ultra && lastStep.Magnitude() > 0 && lastStep.Magnitude() < 4 && lastStep.Normalize() != direction.Normalize()) continue;
+            // should never do more than 3 or 10 steps in same direction
+            if ((lastStep + direction).Magnitude() >= (ultra ? 11f : 4f)) continue;
             result.Add(direction);
         }
         return result;
