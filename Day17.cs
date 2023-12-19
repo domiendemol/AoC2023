@@ -60,28 +60,50 @@ public class Day17
         }
 
         // TODO currently off by one on the actual input (1127 instead of 1128) and no idea why
-        int part1 = minDist.Where(kvp => kvp.Key.pos == new Vector2Int(_gridHeight - 1, _gridWidth - 1))
+        int result = minDist.Where(kvp => kvp.Key.pos == new Vector2Int(_gridHeight - 1, _gridWidth - 1))
             .Min(kvp => kvp.Value);
-        return part1;
+        return result+1;
     }
 
     List<Vector2Int> GetPossibleDirections(Vector2Int blockPos, Vector2Int lastStep, bool ultra)
     {
         List<Vector2Int> result = new List<Vector2Int>();
-        foreach (Vector2Int direction in _directions)
+        if (ultra)
         {
-            // check grid edges
-            if (blockPos.x + direction.x < 0) continue;
-            if (blockPos.y + direction.y < 0) continue;
-            if (blockPos.x + direction.x >= _gridHeight) continue;
-            if (blockPos.y + direction.y >= _gridWidth) continue;
-            // should never go back
-            if (lastStep.Normalize() == -1 * direction) continue;
-            if (ultra && lastStep.Magnitude() > 0 && lastStep.Magnitude() < 4 && lastStep.Normalize() != direction.Normalize()) continue;
-            // should never do more than 3 or 10 steps in same direction
-            if ((lastStep + direction).Magnitude() >= (ultra ? 11f : 4f)) continue;
-            result.Add(direction);
+            foreach (Vector2Int direction in _directions)
+            {
+                Vector2Int newDir = direction;
+                if (direction.Normalize() != lastStep.Normalize()) newDir = 4 * direction; // TODO in this case add the costs of the inbetween nodes too!
+                // check grid edges
+                if (blockPos.x + newDir.x < 0) continue;
+                if (blockPos.y + newDir.y < 0) continue;
+                if (blockPos.x + newDir.x >= _gridHeight) continue;
+                if (blockPos.y + newDir.y >= _gridWidth) continue;
+                // should never go back
+                if (lastStep.Normalize() == -1 * direction) continue;
+                if (lastStep.Magnitude() > 0 && lastStep.Magnitude() < 4 && lastStep.Normalize() != direction.Normalize()) continue;
+                // should never do more than 3 or 10 steps in same direction
+                if ((lastStep + direction).Magnitude() >= 11f) continue;
+                result.Add(newDir);
+            }
         }
+        else
+        {
+            foreach (Vector2Int direction in _directions)
+            {
+                // check grid edges
+                if (blockPos.x + direction.x < 0) continue;
+                if (blockPos.y + direction.y < 0) continue;
+                if (blockPos.x + direction.x >= _gridHeight) continue;
+                if (blockPos.y + direction.y >= _gridWidth) continue;
+                // should never go back
+                if (lastStep.Normalize() == -1 * direction) continue;
+                // should never do more than 3 or 10 steps in same direction
+                if ((lastStep + direction).Magnitude() >=  4f) continue;
+                result.Add(direction);
+            }
+        }
+
         return result;
     }
 
