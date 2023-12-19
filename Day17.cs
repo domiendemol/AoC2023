@@ -81,9 +81,9 @@ public class Day17
                 if (blockPos.y + newDir.y >= _gridWidth) continue;
                 // should never go back
                 if (lastStep.Normalize() == -1 * direction) continue;
-                if (lastStep.Magnitude() > 0 && lastStep.Magnitude() < 4 && lastStep.Normalize() != direction.Normalize()) continue;
+                if (lastStep.Max() > 0 && lastStep.Max() < 4 && lastStep.Normalize() != direction.Normalize()) continue;
                 // should never do more than 3 or 10 steps in same direction
-                if ((lastStep + direction).Magnitude() >= 11f) continue;
+                if ((lastStep + direction).Max() >= 11f) continue;
                 result.Add(newDir);
             }
         }
@@ -99,11 +99,10 @@ public class Day17
                 // should never go back
                 if (lastStep.Normalize() == -1 * direction) continue;
                 // should never do more than 3 or 10 steps in same direction
-                if ((lastStep + direction).Magnitude() >=  4f) continue;
+                if ((lastStep + direction).Max() >=  4f) continue;
                 result.Add(direction);
             }
         }
-
         return result;
     }
 

@@ -13,21 +13,11 @@ public class Day19
 		// parse workflows
 		_workflows = input.Where(line => line.Contains(':')).Select(line => new Workflow(line)).ToList();
 		
-		//Console.WriteLine($"PART 1: {Part1(input)}");
+		Console.WriteLine($"PART 1: {Part1(input)}");
 		
 		// we will have to build a graph and find ranges that end up in A
 		Part2();
-		Console.WriteLine($"PART 2: {_part2}");
-
-
-		/*
-		foreach (Part part in parts)
-		{
-			// run workflows starting with 'in'
-			bool accepted = wf.Execute(part);
-			if (accepted) Console.WriteLine(part.xmas.Values.Sum());
-		}
-		*/
+		Console.WriteLine($"PART 2: {_part2.ToString()}");
 	}
 
 	void Part2()
@@ -39,26 +29,28 @@ public class Day19
 		while (queue.Count > 0)
 		{
 			Node node = queue.Dequeue();
+			// TODO if all rules have result A, just return the current count
 			foreach (Rule rule in node.workflow.rules)
 			{
+				// TODO apply opposite of rule to other rules of same workflow
 				Dictionary<char, (int, int)> mins = rule.GetNewMinimums(node.xmas);
-//				if (!rule.HasCondition())
+				if (rule.result == "A")
 				{
-					if (rule.result == "A")
-					{
-						_part2 = BigInteger.Add(_part2, GetCombinations(mins));
-						Console.WriteLine($"{node.workflow.name} - {mins['x']} - {mins['m']} - {mins['a']} - {mins['s']}");
-					}
-					else if (rule.result != "R") queue.Enqueue(new Node(_workflows.First(w => w.name.Equals(rule.result)), mins));
+					_part2 = BigInteger.Add(_part2, GetCombinations(mins)); 
+					Console.WriteLine($"{node.workflow.name} - {mins['x']} * {mins['m']} * {mins['a']} * {mins['s']} => {GetCombinations(mins)}");
 				}
+				else if (rule.result != "R") queue.Enqueue(new Node(_workflows.First(w => w.name.Equals(rule.result)), mins));
 			}
 		}
 	}
 
 	BigInteger GetCombinations(Dictionary<char, (int, int)> mins)
 	{
-		return (mins['x'].Item2 - mins['x'].Item1) * (mins['m'].Item2 - mins['m'].Item1) * 
-			(mins['a'].Item2 - mins['a'].Item1) * (mins['s'].Item2 - mins['s'].Item1);
+		BigInteger total = new BigInteger(mins['x'].Item2 + 1 - mins['x'].Item1);
+		total = BigInteger.Multiply(total, (mins['m'].Item2 + 1 - mins['m'].Item1));
+		total = BigInteger.Multiply(total, (mins['a'].Item2 + 1 - mins['a'].Item1));
+		total = BigInteger.Multiply(total, (mins['s'].Item2 + 1 - mins['s'].Item1));
+		return total;
 	}
 	
 
@@ -159,7 +151,7 @@ public class Day19
 				['a'] = input['a'],
 				['s'] = input['s']
 			};
-			mins[category] = comparator == 1 ? (Math.Max(mins[category].Item1, target), mins[category].Item2) : (mins[category].Item1, Math.Min(mins[category].Item2, target));
+			mins[category] = comparator == 1 ? (Math.Max(mins[category].Item1, target+1), mins[category].Item2) : (mins[category].Item1, Math.Min(mins[category].Item2, target-1));
 			return mins;
 		}
 	}

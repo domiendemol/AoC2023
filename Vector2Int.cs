@@ -38,6 +38,8 @@ namespace AoC2023
         {
             return Math.Sqrt(Math.Pow(x,2) + Math.Pow(y,2));
         }
+
+        public int Max() => Math.Max(x, y);
         
         public static Vector2Int operator +(Vector2Int first, Vector2Int second) => new Vector2Int(first.x + second.x, first.y + second.y);
         public static Vector2Int operator *(int first, Vector2Int second) => new Vector2Int(first * second.x, first * second.y);
