@@ -26,20 +26,27 @@ public class Day19
 		Workflow start = _workflows.First(w => w.name.Equals("in"));
 		queue.Enqueue(new Node(start, new Dictionary<char, (int min, int max)>()));
 
+		List<Rule> rulesToInvert = new List<Rule>();
+		
 		while (queue.Count > 0)
 		{
 			Node node = queue.Dequeue();
-			// TODO if all rules have result A, just return the current count
+			rulesToInvert.Clear();
 			foreach (Rule rule in node.workflow.rules)
 			{
-				// TODO apply opposite of rule to other rules of same workflow
-				Dictionary<char, (int, int)> mins = rule.GetNewMinimums(node.xmas);
+				// TODO apply opposite of rule to following rules of same workflow
+				Dictionary<char, (int, int)> mins = rule.GetNewMinimums(node.xmas, false);
+				foreach (Rule ruleToInvert in rulesToInvert) mins = ruleToInvert.GetNewMinimums(mins, true);
 				if (rule.result == "A")
 				{
 					_part2 = BigInteger.Add(_part2, GetCombinations(mins)); 
-					Console.WriteLine($"{node.workflow.name} - {mins['x']} * {mins['m']} * {mins['a']} * {mins['s']} => {GetCombinations(mins)}");
+					// Console.WriteLine($"{node.workflow.name} - {mins['x']} * {mins['m']} * {mins['a']} * {mins['s']} => {GetCombinations(mins)}");
 				}
-				else if (rule.result != "R") queue.Enqueue(new Node(_workflows.First(w => w.name.Equals(rule.result)), mins));
+				else if (rule.result != "R")
+				{
+					queue.Enqueue(new Node(_workflows.First(w => w.name.Equals(rule.result)), mins));
+				}
+				rulesToInvert.Add(rule);
 			}
 		}
 	}
@@ -49,10 +56,8 @@ public class Day19
 		BigInteger total = new BigInteger(mins['x'].Item2 + 1 - mins['x'].Item1);
 		total = BigInteger.Multiply(total, (mins['m'].Item2 + 1 - mins['m'].Item1));
 		total = BigInteger.Multiply(total, (mins['a'].Item2 + 1 - mins['a'].Item1));
-		total = BigInteger.Multiply(total, (mins['s'].Item2 + 1 - mins['s'].Item1));
-		return total;
+		return BigInteger.Multiply(total, (mins['s'].Item2 + 1 - mins['s'].Item1));
 	}
-	
 
 	long Part1(List<string> input)
 	{
@@ -141,7 +146,7 @@ public class Day19
 			return "";
 		}
 
-		public Dictionary<char, (int, int)> GetNewMinimums(Dictionary<char, (int, int)> input)
+		public Dictionary<char, (int, int)> GetNewMinimums(Dictionary<char, (int, int)> input, bool inverse)
 		{
 			if (category == '/') return input;
 			Dictionary<char, (int, int)> mins = new Dictionary<char, (int, int)>
@@ -151,7 +156,10 @@ public class Day19
 				['a'] = input['a'],
 				['s'] = input['s']
 			};
-			mins[category] = comparator == 1 ? (Math.Max(mins[category].Item1, target+1), mins[category].Item2) : (mins[category].Item1, Math.Min(mins[category].Item2, target-1));
+			if (inverse)
+				mins[category] = comparator == -1 ? (Math.Max(mins[category].Item1, target), mins[category].Item2) : (mins[category].Item1, Math.Min(mins[category].Item2, target));
+			else
+				mins[category] = comparator == 1 ? (Math.Max(mins[category].Item1, target+1), mins[category].Item2) : (mins[category].Item1, Math.Min(mins[category].Item2, target-1));
 			return mins;
 		}
 	}
