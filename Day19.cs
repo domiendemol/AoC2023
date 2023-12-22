@@ -34,7 +34,6 @@ public class Day19
 			rulesToInvert.Clear();
 			foreach (Rule rule in node.workflow.rules)
 			{
-				// TODO apply opposite of rule to following rules of same workflow
 				Dictionary<char, (int, int)> mins = rule.GetNewMinimums(node.xmas, false);
 				foreach (Rule ruleToInvert in rulesToInvert) mins = ruleToInvert.GetNewMinimums(mins, true);
 				if (rule.result == "A")
