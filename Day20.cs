@@ -16,7 +16,8 @@ public class Day20
     private static Queue<Signal> queue = new Queue<Signal>();
     private static long _highPulses;
     private static long _lowPulses;
-    private static long _buttonCount;
+    private static int _buttonCount;
+    private static Dictionary<string, int> _cycles = new Dictionary<string, int>();
 
     public void Run(List<string> input)
     {
@@ -38,12 +39,12 @@ public class Day20
             PushTheButton(_modules["broadcaster"], _modules);
         }
         Console.WriteLine($"PART 1: {_highPulses * _lowPulses}");
-        
-        //TODO for part 2:
-        // result 241,823,802,412,393
-        // trace back from rx to find node with multiple inputs (nx,sp,cc,jq)
-        // creat a dict with the lowest cycle length, when they are HIGH!
+
+        // PART 2:
+        // manually traced back from rx to find node with multiple inputs (nx,sp,cc,jq)
+        // rx becomes low when these multiple inputs send a highs signal
         // do LCM on the results
+        Console.WriteLine($"PART 2: {Utils.LCM(_cycles["nx"], Utils.LCM(_cycles["sp"], Utils.LCM(_cycles["cc"], _cycles["jq"])))}");
     }
 
     void PushTheButton(Module broadcaster, Dictionary<string, Module> modules)
@@ -93,13 +94,6 @@ public class Day20
             else _lowPulses++;
             // Console.WriteLine($"{(source == null ? "button" : source.name)} -{high}-> {this.name}");
             
-            // TODO print out the steps to get to rx high, try and spot a pattern or sos
-            if (name.Equals("rx"))
-                //if (high)
-                    //Console.WriteLine($"BUTTON {_buttonCount}");
-                if (!high)
-                    Console.WriteLine($"FOUND it! {_buttonCount}");
-            
             switch (type)
             {
                 case Type.Broadcaster: 
@@ -113,12 +107,11 @@ public class Day20
                     }
                     break;
                 case Type.Conjunction:
-                    //inputs.TryGetValue(source, out bool prev);
                     inputs[source] = high;
-                    if (name.Equals("nx") && inputs.Values.Count(b => b) != inputs.Count) Console.WriteLine($"FOUND nx! {_buttonCount}");
-                    if (name.Equals("sp") && inputs.Values.Count(b => b) != inputs.Count) Console.WriteLine($"FOUND sp! {_buttonCount}");
-                    if (name.Equals("cc") && inputs.Values.Count(b => b) != inputs.Count) Console.WriteLine($"FOUND cc! {_buttonCount}");
-                    if (name.Equals("jq") && inputs.Values.Count(b => b) != inputs.Count) Console.WriteLine($"FOUND jq! {_buttonCount}");
+                    if (name.Equals("nx") && inputs.Values.Count(b => b) != inputs.Count) _cycles.TryAdd("nx", _buttonCount);
+                    if (name.Equals("sp") && inputs.Values.Count(b => b) != inputs.Count) _cycles.TryAdd("sp", _buttonCount);
+                    if (name.Equals("cc") && inputs.Values.Count(b => b) != inputs.Count) _cycles.TryAdd("cc", _buttonCount);
+                    if (name.Equals("jq") && inputs.Values.Count(b => b) != inputs.Count) _cycles.TryAdd("jq", _buttonCount);
                     targets.ForEach(target => queue.Enqueue(new Signal(){high=inputs.Values.Count(b => b) != inputs.Count, source=this, target=modules[target]}));
                     break;
                 default:
