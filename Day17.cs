@@ -68,7 +68,7 @@ public class Day17
     List<Vector2Int> GetPossibleDirections(Vector2Int blockPos, Vector2Int lastStep, bool ultra)
     {
         List<Vector2Int> result = new List<Vector2Int>();
-        if (ultra)
+        if (ultra) // aka part 2
         {
             foreach (Vector2Int direction in _directions)
             {

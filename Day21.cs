@@ -1,4 +1,5 @@
 using System.ComponentModel.Design;
+using System.Diagnostics;
 
 namespace AoC2023;
 
@@ -8,61 +9,87 @@ public class Day21
 
 	private char[,] grid;
 	
-	// DFS
-	private int[,] depths;
-	
 	// BFs
 	private bool[,] visited;
 	private Vector2Int[,] prevs;
-	private int[,] dists;
 	
 	public void Run(List<string> input)
 	{
-		
-		// BFS/DFS to test all possbilities
 		grid = new char[input.Count, input[0].Length];
-		depths = new int[input.Count, input[0].Length];
-		prevs = new Vector2Int[input.Count, input[0].Length];
-		dists = new int[input.Count, input[0].Length];
-		visited = new bool[input.Count, input[0].Length];
 		Vector2Int start = new Vector2Int(0,0);
 		for (int i = 0; i < input.Count; i++) {
-			for (int j = 0; j < input[0].Length; j++) {
+			for (int j = 0; j < grid.GetLength(1); j++) {
 				grid[i, j] = input[i][j];
-				depths[i,j] = Int32.MaxValue;
 				if (grid[i, j] == 'S') start = new Vector2Int(i,j);
 			}
 		}
-
-		BFS(start, 64);
-		//DFS(start, 64);
+		// strategy: calculated shortest path for all positions within 64 dist, using modified BFS
+		int[,] dists = BFS(start, 64);
 		
-		// count 0's
-		
-		// print
 		int part1 = 0;
 		for (int i = 0; i < input.Count; i++) {
-			for (int j = 0; j < input[0].Length; j++) {
+			for (int j = 0; j < grid.GetLength(1); j++) {
+				// if it can be reached with 64 steps or a lower amount divisible by 2, then it's good
+				// if uneven, it's never possible to reach it with 64 since we only do wind direction changes
 				if (dists[i, j] <= 64 && dists[i,j] % 2 == 0) part1++;
 			}
 		}
 		Console.WriteLine($"PART 1: {part1}");
 		
-		/*
-		for (int i = 0; i < input.Count; i++) {
-			for (int j = 0; j < input[0].Length; j++) {
-				Console.Write((dists[i, j] <= 6 && dists[i,j] % 2 == 0) ? 'O' : grid[i,j]);
-			}
-			Console.WriteLine();
+		// PART 2: can we brute force it by using dicts instead of a fixed grid??
+		
+		// option 2 is to math calculate it, 26501365 steps = k-l grid of grids
+		// we can calculate shortest paths for all places in our original grid
+		// but then what? we only need to know if shortest path is even or uneven
+		// --> outer edges of first grid are 65 steps away, so will always be uneven
+		// so we should be able to figure out in which grids we will end up
+		// oooh there's a line through the middle!!
+		
+		// calc shortest distances from
+		// middle lowest pos, up
+		// middle highest pos, down
+		// middle left pos, right
+		// middle right pos, left
+		// we can use manhattan distance to count the grids too!
+		
+		int nrBlocks = ((26501365-65)/131);
+
+		long even = 0;
+		long uneven = 0;
+		for (int a = 1; a < nrBlocks; a++) // layers
+		{
+			if (a % 2 == 0) uneven += 4 * a;
+			else even += 4 * a;
 		}
-		*/
+		Console.WriteLine($"{even} -- {uneven}");
+		dists = BFS(start, 0);
+		long reachableWithUnevenDistStartCell = CountCells(false, dists);
+		dists = BFS(new Vector2Int(130, 65), 0);
+		long reachableWithUnevenDist = CountCells(false, dists);
+		long reachableWithEvenDist = CountCells(true, dists);
 		
-		// new strategy: calculated shortest path for all positions within 64 dist
-		// loop them: if shortest dist == even, yes it can be reached with 64 steps!
+		long result = reachableWithUnevenDistStartCell;
+		result += even * reachableWithEvenDist + uneven * reachableWithUnevenDist;
 		
+		// now the special cases
+		// the edges: calculate 3 more types
+		// - the 4 corners
+		// - tiles outside who are only used a little (in the corner)
+		// - tilese inside who have a little corner cut off
+		// https://imgur.com/tq8bDre
+		
+		Console.WriteLine($"PART 2: {result}");
+		
+
+		
+
 	}
-	void BFS(Vector2Int start, int depth)
+	int[,] BFS(Vector2Int start, int depth)
 	{
+		prevs = new Vector2Int[grid.GetLength(0), grid.GetLength(1)];
+		int [,] dists = new int[grid.GetLength(0), grid.GetLength(1)];
+		visited = new bool[grid.GetLength(0), grid.GetLength(1)];
+		
 		for (int i = 0; i < grid.GetLength(0); i++) {
 			for (int j = 0; j < grid.GetLength(0); j++) {
 				dists[i,j] = Int32.MaxValue;
@@ -91,35 +118,28 @@ public class Day21
 				dists[newPos.x, newPos.y] = dists[pos.x, pos.y] + 1;
 				prevs[newPos.x, newPos.y] = pos;
 
-				if (dists[newPos.x, newPos.y] == depth) continue;
+				if (depth != 0 && dists[newPos.x, newPos.y] == depth) continue;
 				
 				queue.Enqueue(newPos);
 			}
 		}
-	}
-	
 
-	void DFS(Vector2Int pos, int depth)
+		return dists;
+	}
+
+	long CountCells(bool even, int[,] dists)
 	{
-		if (pos.x < 0 || pos.x >= grid.GetLength(0)) return;
-		if (pos.y < 0 || pos.y >= grid.GetLength(1)) return;
-		if (grid[pos.x, pos.y] == '#') return;
-		
-		if (depth >= 64)
-		{
-			grid[pos.x, pos.y] = 'O';
-			return;
+		long result = 0;
+		for (int i = 0; i < dists.GetLength(0); i++) {
+			for (int j = 0; j < dists.GetLength(1); j++)
+			{
+				if (dists[i,j] == Int32.MaxValue) continue;
+				if (even && dists[i,j] % 2 == 0) result++;
+				else if (!even && dists[i, j] % 2 != 0) result++;
+			}
 		}
 
-		if (depths[pos.x, pos.y] < depth) return;
-		depths[pos.x, pos.y] = Math.Min(depths[pos.x, pos.y], depth);
-
-
-		// evaluate all 4 directions
-		DFS(pos + new Vector2Int(0,1), depth+1);
-		DFS(pos + new Vector2Int(0,-1),depth+1);
-		DFS(pos + new Vector2Int(1,0), depth+1);
-		DFS(pos + new Vector2Int(-1,0),depth+1);
-		return;
+		return result;
 	}
+	
 }
