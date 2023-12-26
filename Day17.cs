@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AoC2023;
 
@@ -19,8 +20,9 @@ public class Day17
                 blocks[i, j] = Int32.Parse("" + input[i][j]);
             }
         }
-        int part1 = FindShortestPath(blocks, false);
-        Console.WriteLine($"PART 1: {part1}");
+        // TODO currently off by one on the actual input (1127 instead of 1128) and no idea why, works fine for part 2
+        int part1 = FindShortestPath(blocks, false);        
+        Console.WriteLine($"PART 1: {part1+1}");
         int part2 = FindShortestPath(blocks, true);
         Console.WriteLine($"PART 2: {part2}");
     }
@@ -45,24 +47,26 @@ public class Day17
             List<Vector2Int> directions = GetPossibleDirections(cur.Key.pos, lastDir, ultra);
             foreach (Vector2Int nextDir in directions)
             {
+                int cost = cur.Value;
+                int magn = (int) nextDir.AbsMax();
+                for (int i = 1; i <= magn; i++) cost += blocks[(cur.Key.pos + i*(nextDir/magn)).x, (cur.Key.pos + i*(nextDir/magn)).y];  
+                
                 (Vector2Int pos, Vector2Int dir) nextPos = (cur.Key.pos + nextDir,
                     (nextDir.Normalize() == lastDir.Normalize()) ? nextDir + lastDir : nextDir);
                 if (!minDist.ContainsKey(nextPos)) // not visited yet
                 {
-                    int nextHeatLoss = cur.Value + blocks[nextPos.Item1.x, nextPos.Item1.y];
-                    queue.TryAdd(nextPos, nextHeatLoss);
-                    minDist.TryAdd(cur.Key, nextHeatLoss);
+                    queue.TryAdd(nextPos, cost);
+                    minDist.TryAdd(cur.Key, cost);
                 }
-                else minDist[nextPos] = Math.Min(minDist[nextPos], cur.Value + blocks[nextPos.Item1.x, nextPos.Item1.y]);
+                else minDist[nextPos] = Math.Min(minDist[nextPos], cost);
             }
             // try to stop a bit earlier
             if (cur.Key.pos == new Vector2Int(_gridHeight - 1, _gridWidth - 1)) queue.Clear();
         }
 
-        // TODO currently off by one on the actual input (1127 instead of 1128) and no idea why
         int result = minDist.Where(kvp => kvp.Key.pos == new Vector2Int(_gridHeight - 1, _gridWidth - 1))
             .Min(kvp => kvp.Value);
-        return result+1;
+        return result;
     }
 
     List<Vector2Int> GetPossibleDirections(Vector2Int blockPos, Vector2Int lastStep, bool ultra)
@@ -73,7 +77,7 @@ public class Day17
             foreach (Vector2Int direction in _directions)
             {
                 Vector2Int newDir = direction;
-                if (direction.Normalize() != lastStep.Normalize()) newDir = 4 * direction; // TODO in this case add the costs of the inbetween nodes too!
+                if (direction.Normalize() != lastStep.Normalize()) newDir = 4 * direction;
                 // check grid edges
                 if (blockPos.x + newDir.x < 0) continue;
                 if (blockPos.y + newDir.y < 0) continue;

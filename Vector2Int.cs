@@ -31,6 +31,7 @@ namespace AoC2023
 
         public Vector2Int Normalize()
         {
+            // return new Vector2Int((int) (x / Magnitude()), (int) (y / Magnitude()));
             return new Vector2Int(x == 0 ? 0 : x / x, y == 0 ? 0 : y / y);
         }
 
@@ -40,9 +41,10 @@ namespace AoC2023
         }
 
         public int Max() => Math.Max(x, y);
-        
+        public int AbsMax() => Math.Max(Math.Abs(x), Math.Abs(y));
         public static Vector2Int operator +(Vector2Int first, Vector2Int second) => new Vector2Int(first.x + second.x, first.y + second.y);
         public static Vector2Int operator *(int first, Vector2Int second) => new Vector2Int(first * second.x, first * second.y);
+        public static Vector2Int operator /(Vector2Int first, int second) => new Vector2Int(first.x / second, first.y / second);
         public static Vector2Int operator -(Vector2Int first, Vector2Int second) => new Vector2Int(first.x - second.x, first.y - second.y);
         public static bool operator ==(Vector2Int first, Vector2Int second) => first.x == second.x && first.y == second.y;
         public static bool operator !=(Vector2Int first, Vector2Int second) => !(first == second);
