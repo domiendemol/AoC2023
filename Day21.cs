@@ -45,52 +45,54 @@ public class Day21
 		// so we should be able to figure out in which grids we will end up
 		// oooh there's a line through the middle!!
 		// we can use manhattan distance to count the grids too!
+
+		int steps = 26501365;
+		int width = grid.GetLength(0);
+		int half = width / 2;
+		bool even = (steps % 2 == 0);
 		
-		int nrBlocks = ((26501365-65)/131);
-		long even = 0;
-		long uneven = 0;
+		int nrBlocks = ((steps-half)/width); // 202300
+		long evenBlocks = 0;
+		long unevenBlocks = 1;
 		for (int a = 1; a < nrBlocks; a++) // layers
 		{
-			if (a % 2 == 0) uneven += 4 * a;
-			else even += 4 * a;
+			if (a % 2 == 0) unevenBlocks += 4 * a;
+			else evenBlocks += 4 * a;
 		}
-		Console.WriteLine($"{even} -- {uneven}");
 		dists = BFS(start, 0);
-		long reachableWithUnevenDistStartCell = CountCells(false, dists);
-		dists = BFS(new Vector2Int(131, 65), 0);
-		long reachableWithUnevenDist = CountCells(false, dists);
-		long reachableWithEvenDist = CountCells(true, dists);
-
+		long reachableWithUnevenDist = CountCells(even, dists);
+		long reachableWithEvenDist = CountCells(!even, dists);
+		
 		// end cells
-		dists = BFS(new Vector2Int(-1,65), 131);
+		dists = BFS(new Vector2Int(-1,half), width);
 		long reachableEndGrid1 = CountCells(false, dists);
-		dists = BFS(new Vector2Int(131,65), 131);
+		dists = BFS(new Vector2Int(width,half), width);
 		long reachableEndGrid2 = CountCells(false, dists);
-		dists = BFS(new Vector2Int(65,-1), 131);
+		dists = BFS(new Vector2Int(half,-1), width);
 		long reachableEndGrid3 = CountCells(false, dists);
-		dists = BFS(new Vector2Int(65,131), 131);
+		dists = BFS(new Vector2Int(half,width), width);
 		long reachableEndGrid4 = CountCells(false, dists);
 		// end grids outside of our square
-		dists = BFS(new Vector2Int(0,-1), 65);
+		dists = BFS(new Vector2Int(0,-1), half);
 		long reachableOutsideGrid1 = CountCells(false, dists);
-		dists = BFS(new Vector2Int(130,131), 65);
+		dists = BFS(new Vector2Int(width-1,width), half);
 		long reachableOutsideGrid2 = CountCells(false, dists);
-		dists = BFS(new Vector2Int(130,-1), 6);
+		dists = BFS(new Vector2Int(width,0), half);
 		long reachableOutsideGrid3 = CountCells(false, dists);
-		dists = BFS(new Vector2Int(-1,130), 65);
+		dists = BFS(new Vector2Int(0,width), half);
 		long reachableOutsideGrid4 = CountCells(false, dists);
 		// similar ones, but inside
-		dists = BFS(new Vector2Int(0,-1), 131+65);
+		dists = BFS(new Vector2Int(0,-1), width+half);
 		long reachableEndInsideGrid1 = CountCells(true, dists);
-		dists = BFS(new Vector2Int(130,131), 132+65);
+		dists = BFS(new Vector2Int(width-1,width), width+half);
 		long reachableEndInsideGrid2 = CountCells(true, dists);
-		dists = BFS(new Vector2Int(130,-1), 131+65);
+		dists = BFS(new Vector2Int(width,0), width+half);
 		long reachableEndInsideGrid3 = CountCells(true, dists);
-		dists = BFS(new Vector2Int(-1,130), 131+65);
+		dists = BFS(new Vector2Int(0,width), width+half);
 		long reachableEndInsideGrid4 = CountCells(true, dists);
 
-		long result = reachableWithUnevenDistStartCell;
-		result += even * reachableWithEvenDist + (uneven) * reachableWithUnevenDist;
+		long result = 0;
+		result += (evenBlocks * reachableWithEvenDist) + (unevenBlocks * reachableWithUnevenDist);
 		result += reachableEndGrid1 + reachableEndGrid2 + reachableEndGrid3 + reachableEndGrid4;
 		result += nrBlocks * (reachableOutsideGrid1 + reachableOutsideGrid2 + reachableOutsideGrid3 + reachableOutsideGrid4);
 		result += (nrBlocks - 1) * (reachableEndInsideGrid1 + reachableEndInsideGrid2 + reachableEndInsideGrid3 + reachableEndInsideGrid4);
@@ -99,7 +101,7 @@ public class Day21
 		// the edges: calculate 3 more types
 		// - the 4 corners
 		// - tiles outside who are only used a little (in the corner)
-		// - tilese inside who have a little corner cut off
+		// - tiles inside who have a little corner cut off
 		// https://imgur.com/tq8bDre
 		
 		Console.WriteLine($"PART 2: {result}");
